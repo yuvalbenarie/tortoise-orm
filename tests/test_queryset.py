@@ -308,21 +308,16 @@ class TestQueryset(test.TestCase):
 
         self.assertEqual(await IntFields.all().count(), 29)
 
-        rows_affected = (
-            await IntFields.all().order_by("intnum").limit(10).filter(intnum__gte=70).delete()
-        )
-        self.assertEqual(rows_affected, 10)
-
-        self.assertEqual(await IntFields.all().count(), 19)
-
     @test.requireCapability(support_update_limit_order_by=True)
     async def test_delete_limit(self):
-        await IntFields.all().limit(1).delete()
+        rows_affected = await IntFields.all().limit(1).delete()
+        self.assertEqual(rows_affected, 1)
         self.assertEqual(await IntFields.all().count(), 29)
 
     @test.requireCapability(support_update_limit_order_by=True)
     async def test_delete_limit_order_by(self):
-        await IntFields.all().limit(1).order_by("-id").delete()
+        rows_affected = await IntFields.all().limit(1).order_by("-id").delete()
+        self.assertEqual(rows_affected, 1)
         self.assertEqual(await IntFields.all().count(), 29)
         with self.assertRaises(DoesNotExist):
             await IntFields.get(intnum=97)
